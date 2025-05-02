@@ -1,4 +1,4 @@
-package com.example.todo_compose_app.screens
+package com.example.todo_compose_app.screens.signup
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
