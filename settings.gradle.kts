@@ -11,14 +11,18 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
     }
+
+
 }
 
 rootProject.name = "TODO_Compose_App"
 include(":app")
- 
+include(":data")
+include(":domain")

@@ -1,9 +1,8 @@
-package com.example.todo_compose_app.screens
+package com.example.todo_compose_app.screens.signup
 
-import androidx.annotation.ColorRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,13 +16,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -38,31 +35,38 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.todo_compose_app.R
 import com.example.todo_compose_app.viewModels.SignUpViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.todo_compose_app.viewModels.AuthUiState
+
 
 @Composable
 fun SignUpScreen(
     navController: NavController,
-    viewModel: SignUpViewModel = viewModel()
+    viewModel: SignUpViewModel = hiltViewModel() // inject ViewModel
 ) {
-    DrawingTextFields(viewModel, Modifier , navController)
+    SignUpContent(viewModel, Modifier, navController)
+
 }
 
 
-
 @Composable
-fun DrawingTextFields(
+fun SignUpContent(
     viewModel: SignUpViewModel,
-    modifier: Modifier = Modifier ,
+    modifier: Modifier = Modifier,
     navController: NavController
 ) {
+//
+
+
     Column(
         modifier = Modifier
             .padding(18.dp)
@@ -92,52 +96,37 @@ fun DrawingTextFields(
 
         var hasFocus by remember { mutableStateOf(false) }
 
-        OutlinedTextField(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            value = viewModel.fullNameText,
-            onValueChange = { value ->
+        TextFieldItem(
+            value = viewModel.fullNameText.value,
+            onValueChanged = { value ->
                 viewModel.setFullNameValue(value)
             },
-            placeholder = {
-                Text(
-                    text = "Full Name",
-                    style = TextStyle(fontSize = 12.sp, color = Color.Gray)
-                )
+            placeHolderText = "Full Name",
+            modifier = Modifier
+        )
+        TextFieldItem(
+            value = viewModel.emailAddressText.value,
+            onValueChanged = { value ->
+                viewModel.setEmailAddress(value)
+
             },
+            placeHolderText = "Email Address",
+            modifier = Modifier
+        )
 
 
-
-            )
+        var passwordVisible by remember { mutableStateOf(false) }
+        var confirmPasswordVisible by remember { mutableStateOf(false) }
 
 
         OutlinedTextField(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            value = viewModel.emailAddressText,
+            value = viewModel.passwordText.value,
             onValueChange = { value ->
-                viewModel.setEmailAddressValue(value)
-            },
-            placeholder = {
-                Text(
-                    text = "Email Address",
-                    style = TextStyle(fontSize = 12.sp, color = Color.Gray)
-                )
-            },
-            shape = RoundedCornerShape(12.dp),
+                viewModel.setPasswordText(value)
 
-            )
-
-        OutlinedTextField(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            value = viewModel.passwordText,
-            onValueChange = { value ->
-                viewModel.setPasswordValue(value)
             },
             placeholder = {
                 Text(
@@ -146,16 +135,39 @@ fun DrawingTextFields(
                 )
             },
             shape = RoundedCornerShape(12.dp),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    painterResource(R.drawable.eyeclosed)
+                else
+                    painterResource(R.drawable.eyeclosed)
 
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(
+                        painter = image,
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
+            singleLine = true,
+
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = colorResource(R.color.blue),
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
             )
+
+        )
 
         OutlinedTextField(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            value = viewModel.confirmPasswordText,
+            value = viewModel.confirmPasswordText.value,
             onValueChange = { value ->
-                viewModel.setConfirmPasswordValue(value)
+                viewModel.setConfirmPasswordText(value)
+
+
             },
             placeholder = {
                 Text(
@@ -164,42 +176,94 @@ fun DrawingTextFields(
                 )
             },
             shape = RoundedCornerShape(12.dp),
+            visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (confirmPasswordVisible)
+                    painterResource(R.drawable.eyeclosed)
+                else
+                    painterResource(R.drawable.eyeclosed)
 
-
+                IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                    Icon(
+                        painter = image,
+                        contentDescription = if (confirmPasswordVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = colorResource(R.color.blue) ,
+                focusedContainerColor = Color.White ,
+                unfocusedContainerColor = Color.White
             )
 
-        DrawingCheckBox(modifier)
-        DrawingTheSignUpBtn(modifier , navController)
+        )
+
+        DrawingCheckBox(modifier, viewModel)
+        DrawingTheSignUpBtn(viewModel, modifier, navController)
         DrawingSignUpWays()
 
         Text(
             text = buildAnnotatedString {
-                withStyle( SpanStyle(
-                    fontSize = 12.sp,
-                    color = Color.Gray,
-                    fontFamily = fontFamily ,
-                    fontWeight = FontWeight.SemiBold
-                )
-                ){
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        fontFamily = fontFamily,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                ) {
                     append("Already have an account? ")
                 }
 
-                withStyle( SpanStyle(
-                    fontSize = 12.sp,
-                    color = colorResource(R.color.blue),
-                    fontFamily = fontFamily ,
-                    fontWeight = FontWeight.SemiBold
-                )
-                ){
+                withStyle(
+                    SpanStyle(
+                        fontSize = 12.sp,
+                        color = colorResource(R.color.blue),
+                        fontFamily = fontFamily,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                ) {
                     append("Log In")
                 }
-            } ,
+            },
             modifier = Modifier
-                .padding(4.dp),
-            textAlign = TextAlign.Center
-        )
+                .padding(4.dp)
+                .clickable { navController.navigate("login") },
+            textAlign = TextAlign.Center,
+
+            )
 
     }
+}
+
+@Composable
+fun TextFieldItem(
+    value: String,
+    onValueChanged: (String) -> Unit,
+    placeHolderText: String,
+    modifier: Modifier
+) {
+    OutlinedTextField(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        value = value,
+        onValueChange = onValueChanged,
+        placeholder = {
+            Text(
+                text = placeHolderText,
+                style = TextStyle(fontSize = 12.sp, color = Color.Gray)
+            )
+        },
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = colorResource(R.color.blue),
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White
+        )
+    )
+
 }
 
 @Composable
@@ -213,20 +277,21 @@ fun DrawingSignUpToDoIc(modifier: Modifier = Modifier) {
     )
 }
 
+
 @Composable
 fun DrawingCheckBox(
-    modifier: Modifier
+    modifier: Modifier,
+    viewModel: SignUpViewModel
 ) {
-    var isChecked by remember {
-        mutableStateOf(true)
-    }
+
+    val isChecked by viewModel.termsAccepted
     Row(
         horizontalArrangement = Arrangement.Start
     ) {
         Checkbox(
             checked = isChecked,
             onCheckedChange = {
-                check(it)
+                viewModel.setTermsAccepted(it)
             },
             colors = CheckboxDefaults.colors(
                 colorResource(R.color.blue)
@@ -234,12 +299,14 @@ fun DrawingCheckBox(
 
         )
         Text(
-            modifier = modifier.fillMaxWidth().padding(4.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(4.dp),
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = Color.Gray ,
-                        fontFamily = fontFamily ,
+                        color = Color.Gray,
+                        fontFamily = fontFamily,
                     )
                 ) {
                     append("I have read, understood & agreed to ToDo’s ")
@@ -247,7 +314,7 @@ fun DrawingCheckBox(
                 withStyle(
                     style = SpanStyle(
                         color = colorResource(R.color.blue),
-                        fontFamily = fontFamily ,
+                        fontFamily = fontFamily,
                     )
                 ) {
                     append("Privacy Policy, Terms & Condition")
@@ -263,10 +330,18 @@ fun DrawingCheckBox(
 
 @Composable
 fun DrawingTheSignUpBtn(
+    viewModel: SignUpViewModel,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+) {
 
-    ) {
+    val authState by viewModel.authState.collectAsState()
+
+    var name = viewModel.fullNameText.value
+    var email = viewModel.emailAddressText.value
+    var password = viewModel.passwordText.value
+    var confirmPassword = viewModel.confirmPasswordText.value
+
     Button(
 
         modifier = modifier
@@ -278,18 +353,47 @@ fun DrawingTheSignUpBtn(
             containerColor = colorResource(R.color.blue) // Set the background color to blue
         ),
         onClick = {
-            navController.navigate("emailVerification")
+
+            viewModel.onSignUp(name, email, password)
 
         },
+        enabled = authState !is AuthUiState.Loading,
         shape = RoundedCornerShape(8.dp)
 
     ) {
-        Text(
-            modifier = modifier.padding(8.dp),
-            text = "Sign Up",
-            fontSize = 16.sp
-        )
+        if (authState is AuthUiState.Loading) {
+            CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
+        } else {
+            Text(
+                modifier = modifier.padding(8.dp),
+                text = "Sign Up",
+                fontSize = 16.sp
+            )
+        }
+
     }
+
+    when (authState) {
+        is AuthUiState.Loading -> CircularProgressIndicator()
+        is AuthUiState.Success -> {
+            LaunchedEffect(Unit) {
+                navController.navigate("emailVerification") {
+                    popUpTo("signUp") { inclusive = true }
+                }
+            }
+        }
+
+        is AuthUiState.Failure -> {
+            Text(
+                text = (authState as AuthUiState.Failure).message,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        else -> {}
+    }
+
 }
 
 
@@ -364,4 +468,6 @@ fun DrawingSignUpWays() {
         }
     }
 }
+
+
 

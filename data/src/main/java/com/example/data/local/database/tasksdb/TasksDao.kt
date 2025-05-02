@@ -1,4 +1,4 @@
-package com.example.data.room_database
+package com.example.data.local.database.tasksdb
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,23 +6,24 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface TasksDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTask(task: Task)
+    suspend fun insertTask(taskEntity: TaskEntity)
 
     @Delete
-    suspend fun delete(task: Task)
+    suspend fun delete(taskEntity: TaskEntity)
 
     @Update
-    suspend fun update(task: Task)  // Fixed: Pass Task instead of Int
+    suspend fun update(taskEntity: TaskEntity)  // Fixed: Pass Task instead of Int
 
     @Query("SELECT * FROM task WHERE date = :date ")
-    suspend fun getTaskByDate(date: Long): List<Task>
+    suspend fun getTaskByDate(date: Long): List<TaskEntity>
 
     @Query("SELECT * FROM task")
-    suspend fun getAllTasks(): List<Task>
+     fun getAllTasks(): Flow<List<TaskEntity>>
 }
