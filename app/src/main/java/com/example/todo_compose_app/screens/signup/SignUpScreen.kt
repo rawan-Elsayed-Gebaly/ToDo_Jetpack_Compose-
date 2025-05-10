@@ -1,8 +1,8 @@
 package com.example.todo_compose_app.screens.signup
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +29,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -43,15 +44,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todo_compose_app.R
-import com.example.todo_compose_app.viewModels.SignUpViewModel
+import com.example.todo_compose_app.viewModels.AuthenticationViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.todo_compose_app.screens.login.OptionalWays
+import com.example.todo_compose_app.screens.login.launchGoogleSignIn
 import com.example.todo_compose_app.viewModels.AuthUiState
+import com.example.todo_compose_app.viewModels.GoogleAuthUiState
 
 
 @Composable
 fun SignUpScreen(
     navController: NavController,
-    viewModel: SignUpViewModel = hiltViewModel() // inject ViewModel
+    viewModel: AuthenticationViewModel = hiltViewModel() , // inject ViewModel
+
 ) {
     SignUpContent(viewModel, Modifier, navController)
 
@@ -60,9 +65,9 @@ fun SignUpScreen(
 
 @Composable
 fun SignUpContent(
-    viewModel: SignUpViewModel,
+    viewModel: AuthenticationViewModel,
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController ,
 ) {
 //
 
@@ -201,39 +206,15 @@ fun SignUpContent(
 
         DrawingCheckBox(modifier, viewModel)
         DrawingTheSignUpBtn(viewModel, modifier, navController)
-        DrawingSignUpWays()
-
-        Text(
-            text = buildAnnotatedString {
-                withStyle(
-                    SpanStyle(
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        fontFamily = fontFamily,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                ) {
-                    append("Already have an account? ")
-                }
-
-                withStyle(
-                    SpanStyle(
-                        fontSize = 12.sp,
-                        color = colorResource(R.color.blue),
-                        fontFamily = fontFamily,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                ) {
-                    append("Log In")
-                }
-            },
-            modifier = Modifier
-                .padding(4.dp)
-                .clickable { navController.navigate("login") },
-            textAlign = TextAlign.Center,
-
-            )
-
+        DrawingSignUpWays(
+            viewModel , navController
+        )
+        OptionalWays(
+            navController =  navController ,
+            route = "login" ,
+            text = "Already have an account? " ,
+            clickableText = "Log In"
+        )
     }
 }
 
@@ -281,7 +262,7 @@ fun DrawingSignUpToDoIc(modifier: Modifier = Modifier) {
 @Composable
 fun DrawingCheckBox(
     modifier: Modifier,
-    viewModel: SignUpViewModel
+    viewModel: AuthenticationViewModel
 ) {
 
     val isChecked by viewModel.termsAccepted
@@ -330,9 +311,9 @@ fun DrawingCheckBox(
 
 @Composable
 fun DrawingTheSignUpBtn(
-    viewModel: SignUpViewModel,
+    viewModel: AuthenticationViewModel,
     modifier: Modifier = Modifier,
-    navController: NavController,
+    navController: NavController
 ) {
 
     val authState by viewModel.authState.collectAsState()
@@ -398,7 +379,14 @@ fun DrawingTheSignUpBtn(
 
 
 @Composable
-fun DrawingSignUpWays() {
+fun DrawingSignUpWays(
+    viewModel: AuthenticationViewModel ,
+    navController: NavController ,
+) {
+    val context = LocalContext.current // ✅ this is the correct way
+
+
+    val googleAuthState by viewModel.googleAuthState.collectAsState()
 
     Row(
         modifier = Modifier
@@ -409,6 +397,7 @@ fun DrawingSignUpWays() {
         Button(
             onClick = {
 
+                launchGoogleSignIn(context =  context , viewModel)
             },
             modifier = Modifier
                 .weight(1f),
@@ -433,6 +422,8 @@ fun DrawingSignUpWays() {
                 fontSize = 10.sp,
                 color = colorResource(R.color.gray)
             )
+
+
 
         }
 
@@ -466,7 +457,30 @@ fun DrawingSignUpWays() {
             )
 
         }
+
     }
+
+    when (googleAuthState) {
+        is GoogleAuthUiState.Loading -> CircularProgressIndicator()
+        is GoogleAuthUiState.Success -> {
+            LaunchedEffect(Unit) {
+                navController.navigate("emailVerification") {
+                    popUpTo("signUp") { inclusive = true }
+                }
+            }
+        }
+
+        is GoogleAuthUiState.Failure -> {
+            Text(
+                text = (googleAuthState as GoogleAuthUiState.Failure).message,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        else -> {}
+
+}
 }
 
 

@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">TODO_Compose_App</string>
+    <string name="default_web_client_id">
+        1097240983250-d1svvus4bmckar5kd4s1sk3qa86vmotr.apps.googleusercontent.com
+    </string>
 </resources>

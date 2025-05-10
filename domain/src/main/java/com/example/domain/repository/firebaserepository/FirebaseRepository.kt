@@ -8,6 +8,8 @@ interface FirebaseRepository {
 
     suspend fun signUp(email:String , password:String): AuthResponse<FirebaseUser>
     suspend fun logIn(email:String , password:String ): AuthResponse<FirebaseUser>
+    suspend fun signInWithGoogle(idToken: String): AuthResponse<User>
+    suspend fun signUpWithGoogle(idToken: String): AuthResponse<FirebaseUser>
     fun getCurrentUser() : FirebaseUser?
     fun logOut()
 

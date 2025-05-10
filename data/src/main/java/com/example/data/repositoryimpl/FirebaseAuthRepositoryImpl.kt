@@ -1,6 +1,8 @@
 package com.example.data.repositoryimpl
 
+import androidx.collection.intSetOf
 import com.example.data.datasource.remote.FirebaseAuthDataSource
+import com.example.data.mapper.toDomain
 import com.example.domain.model.AuthResponse
 import com.example.domain.model.User
 import com.example.domain.repository.firebaserepository.FirebaseRepository
@@ -16,6 +18,18 @@ class FirebaseAuthRepositoryImpl @Inject constructor(
 
     override suspend fun logIn(email: String, password: String): AuthResponse<FirebaseUser> {
         return firebaseAuthDataSource.logIn(email , password)
+    }
+
+    override suspend fun signInWithGoogle(idToken: String): AuthResponse<User> {
+       return when( val result =firebaseAuthDataSource.signInWithGoogle(idToken)){
+           is AuthResponse.Success -> AuthResponse.Success(result.data.toDomain())
+           is AuthResponse.Failure -> AuthResponse.Failure(Exception() , result.isFailure.toString())
+           AuthResponse.Loading -> AuthResponse.Loading
+       }
+    }
+
+    override suspend fun signUpWithGoogle(idToken: String): AuthResponse<FirebaseUser> {
+        TODO("Not yet implemented")
     }
 
     override fun getCurrentUser(): FirebaseUser? {
