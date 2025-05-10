@@ -18,6 +18,10 @@ class AuthenticationUseCase @Inject constructor (
         return firebaseRepository.logIn(email , password)
     }
 
+    suspend fun signInWithGoogle(idToked:String):AuthResponse<User>{
+        return firebaseRepository.signInWithGoogle(idToked)
+    }
+
     fun logout(){
         firebaseRepository.logOut()
     }

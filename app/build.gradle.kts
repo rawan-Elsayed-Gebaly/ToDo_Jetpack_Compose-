@@ -48,6 +48,7 @@ dependencies {
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.googleid)
     ksp(libs.room.compiler)
     implementation(project(":domain"))
     implementation(project(":data"))
@@ -69,6 +70,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
 
+    //Google Auth Services
+    implementation(libs.google.auth)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

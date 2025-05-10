@@ -4,6 +4,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.todo_compose_app.screens.login.LogInScreen
 import com.example.todo_compose_app.screens.signup.EmailVerificationScreen
 import com.example.todo_compose_app.screens.signup.GetStaredScreen
 import com.example.todo_compose_app.screens.signup.SignUpScreen
@@ -17,6 +18,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         composable("signUp") { SignUpScreen(navController) }
         composable("emailVerification") { EmailVerificationScreen(navController) }
         composable("successfullyCreated") { SuccessFullCreatedScreen(navController) }
+        composable("login") { LogInScreen(navController) }
+
 
     }
 }
