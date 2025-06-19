@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "977999795621",
+    "project_id": "todocomposeapp-c5aed",
+    "storage_bucket": "todocomposeapp-c5aed.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:977999795621:android:ce61b3f89aa1247979c44c",
+        "android_client_info": {
+          "package_name": "com.example.todo_compose_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUQtLVemHM_Lg6QFiCrtBr-Tu90CFvGxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
