@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,10 +44,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
 import com.example.todo_compose_app.navigation.AppNavHost
 import com.example.todo_compose_app.ui.theme.TODO_Compose_AppTheme
-import com.example.todo_compose_app.viewModels.SignUpViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,9 +94,6 @@ class MainActivity : ComponentActivity() {
 
 
 //            okkkay Well Done RooRoo
-
-
-
 
         }
     }
