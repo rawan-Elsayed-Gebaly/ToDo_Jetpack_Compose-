@@ -2,10 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp) // Apply KSP plugin
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.google.services)
-
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -48,30 +45,12 @@ dependencies {
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    implementation(libs.googleid)
     ksp(libs.room.compiler)
-    implementation(project(":domain"))
-    implementation(project(":data"))
 
     //Navigation Component
     implementation(libs.navigation.compose)
-    // Hilt Navigation Component
-    implementation(libs.hilt.navigation.compose)
 
 
-    //Dagger Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
-
-    //Coroutines
-    implementation(libs.kotlinx.coroutines.android)
-
-    //Firebase auth
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-
-    //Google Auth Services
-    implementation(libs.google.auth)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
