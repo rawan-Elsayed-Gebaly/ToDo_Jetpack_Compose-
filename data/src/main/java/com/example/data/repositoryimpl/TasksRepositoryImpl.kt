@@ -12,25 +12,28 @@ import javax.inject.Inject
 class TasksRepositoryImpl @Inject constructor(
     private val tasksDataSource:TasksDataSource
 ):TasksRepository {
+
     override suspend fun insertTask(task: Tasks) {
 
         tasksDataSource.insertTask(TaskEntity(
-            id = task.id ,
-            title = task.title ,
-            description = task.description ,
+            id = task.id,
+            title = task.title,
+            description = task.description,
             date =  task.date,
-            isDone = task.isDone
+            isDone = task.isDone,
+            priority = task.priority
 
         ))
     }
     override suspend fun deleteTask(task: Tasks) {
         tasksDataSource.deleteTask(
             TaskEntity(
-                id = task.id ,
-                title = task.title ,
-                description = task.description ,
+                id = task.id,
+                title = task.title,
+                description = task.description,
                 date =  task.date,
-                isDone = task.isDone
+                isDone = task.isDone,
+                priority = task.priority
 
             )
         )
@@ -38,20 +41,33 @@ class TasksRepositoryImpl @Inject constructor(
     override suspend fun updateTask(task: Tasks) {
         tasksDataSource.updateTask(
             TaskEntity(
-                id = task.id ,
-                title = task.title ,
-                description = task.description ,
+                id = task.id,
+                title = task.title,
+                description = task.description,
                 date =  task.date,
-                isDone = task.isDone
+                isDone = task.isDone,
+                priority = task.priority
 
             )
         )
     }
-    override suspend fun getAllTasks(): Flow<List<Tasks>> {
+    override  fun getAllTasks(): Flow<List<Tasks>> {
         return tasksDataSource.getAllTasks().map {
           it.map {taskEntity->
                 taskEntity.toDomain()
           }
+        }
+    }
+
+    override suspend fun deleteAllTasks() {
+        tasksDataSource.deleteAllTasks()
+    }
+
+    override fun searchTasks(searchQuery: String): Flow<List<Tasks>> {
+        return tasksDataSource.searchTasks(searchQuery).map {
+           it.map {taskEntity ->
+               taskEntity.toDomain()
+           }
         }
     }
 }

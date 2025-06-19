@@ -7,20 +7,22 @@ import com.example.domain.model.Tasks
 @Entity(tableName = "task" )
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
-     val id :Int= 0 ,
-     var title: String? = null  ,
-     var description : String?=null  ,
-     var date : Long?=null ,
-    var isDone :Boolean= false
+    val id: Int = 0,
+    var title: String,
+    var description: String? = null,
+    var date: Long? = null,
+    var isDone: Boolean = false,
+    val priority: String? =null ,
 ){
     // From Data (Room Entity) to Domain
     fun TaskEntity.toDomain(): Tasks =
         Tasks(
             id,
             title,
-            description ,
-            date ,
-            isDone
+            description,
+            date,
+            isDone,
+            priority
         )
 
 
@@ -31,7 +33,8 @@ data class TaskEntity(
             title,
             description,
             date,
-            isDone
+            isDone,
+            priority
         )
 
 }

@@ -35,7 +35,7 @@ class TasksDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllTasks(): Flow<List<TaskEntity>> {
+    override  fun getAllTasks(): Flow<List<TaskEntity>> {
         try {
             return tasksDao.getAllTasks().map {taskEntity ->
                 taskEntity
@@ -43,5 +43,13 @@ class TasksDataSourceImpl @Inject constructor(
         }catch (ex:Exception){
             throw ex
         }
+    }
+
+    override suspend fun deleteAllTasks() {
+        tasksDao.deleteAll()
+    }
+
+    override fun searchTasks(searchQuery: String): Flow<List<TaskEntity>> {
+        return tasksDao.searchTasks(searchQuery)
     }
 }

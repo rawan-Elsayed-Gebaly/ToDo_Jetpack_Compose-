@@ -17,6 +17,8 @@ interface TasksDao {
 
     @Delete
     suspend fun delete(taskEntity: TaskEntity)
+    @Query("Delete From task")
+    suspend fun deleteAll()
 
     @Update
     suspend fun update(taskEntity: TaskEntity)  // Fixed: Pass Task instead of Int
@@ -26,4 +28,8 @@ interface TasksDao {
 
     @Query("SELECT * FROM task")
      fun getAllTasks(): Flow<List<TaskEntity>>
+
+    @Query("SELECT * FROM task WHERE title LIKE '%' || :query || '%'")
+    fun searchTasks(query: String): Flow<List<TaskEntity>>
+
 }

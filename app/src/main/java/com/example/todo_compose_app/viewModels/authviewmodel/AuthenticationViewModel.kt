@@ -1,11 +1,10 @@
-package com.example.todo_compose_app.viewModels
+package com.example.todo_compose_app.viewModels.authviewmodel
 
 import android.util.Patterns
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.domain.model.AuthResponse
 import com.example.domain.usecases.AuthenticationUseCase
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException

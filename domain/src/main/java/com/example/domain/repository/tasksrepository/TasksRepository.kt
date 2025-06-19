@@ -7,5 +7,7 @@ interface TasksRepository {
     suspend fun insertTask(task:Tasks)
     suspend fun deleteTask(task:Tasks)
     suspend fun updateTask(task:Tasks)
-    suspend fun getAllTasks(): Flow<List<Tasks>>
+     fun getAllTasks(): Flow<List<Tasks>>
+    suspend fun deleteAllTasks()
+    fun searchTasks(searchQuery:String):Flow<List<Tasks>>
 }

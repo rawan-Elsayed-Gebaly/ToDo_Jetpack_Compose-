@@ -20,6 +20,7 @@ class RoomDatabaseModule {
     @Singleton
     fun provideTasksDB(@ApplicationContext context:Context) =
         Room.databaseBuilder(context, TasksDatabase::class.java ,"tasksDatabase")
+            .fallbackToDestructiveMigration()
             .build()
     @Provides
     fun provideTasksDao(

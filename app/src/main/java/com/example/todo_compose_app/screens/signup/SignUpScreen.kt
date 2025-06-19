@@ -1,6 +1,5 @@
 package com.example.todo_compose_app.screens.signup
 
-import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,18 +43,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.todo_compose_app.R
-import com.example.todo_compose_app.viewModels.AuthenticationViewModel
+import com.example.todo_compose_app.viewModels.authviewmodel.AuthenticationViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.todo_compose_app.screens.login.OptionalWays
 import com.example.todo_compose_app.screens.login.launchGoogleSignIn
-import com.example.todo_compose_app.viewModels.AuthUiState
-import com.example.todo_compose_app.viewModels.GoogleAuthUiState
+import com.example.todo_compose_app.viewModels.authviewmodel.AuthUiState
+import com.example.todo_compose_app.viewModels.authviewmodel.GoogleAuthUiState
 
 
 @Composable
 fun SignUpScreen(
     navController: NavController,
-    viewModel: AuthenticationViewModel = hiltViewModel() , // inject ViewModel
+    viewModel: AuthenticationViewModel = hiltViewModel(), // inject ViewModel
 
 ) {
     SignUpContent(viewModel, Modifier, navController)
@@ -67,7 +66,7 @@ fun SignUpScreen(
 fun SignUpContent(
     viewModel: AuthenticationViewModel,
     modifier: Modifier = Modifier,
-    navController: NavController ,
+    navController: NavController,
 ) {
 //
 
@@ -380,8 +379,8 @@ fun DrawingTheSignUpBtn(
 
 @Composable
 fun DrawingSignUpWays(
-    viewModel: AuthenticationViewModel ,
-    navController: NavController ,
+    viewModel: AuthenticationViewModel,
+    navController: NavController,
 ) {
     val context = LocalContext.current // ✅ this is the correct way
 

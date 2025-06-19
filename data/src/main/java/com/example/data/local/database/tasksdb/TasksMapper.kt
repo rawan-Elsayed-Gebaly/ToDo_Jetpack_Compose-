@@ -1,5 +1,6 @@
 package com.example.data.local.database.tasksdb
 
+import androidx.core.os.persistableBundleOf
 import com.example.domain.model.Tasks
 
 
@@ -9,9 +10,10 @@ import com.example.domain.model.Tasks
         Tasks(
             id,
             title,
-            description ,
-            date ,
-            isDone
+            description,
+            date,
+            isDone,
+            priority
         )
 
 
@@ -22,6 +24,7 @@ import com.example.domain.model.Tasks
             title,
             description,
             date,
-            isDone
+            isDone,
+            priority
         )
 

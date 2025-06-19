@@ -73,6 +73,12 @@ dependencies {
     //Google Auth Services
     implementation(libs.google.auth)
 
+    //Material 3
+    implementation(libs.compose.material3)
+
+    //Pager
+    implementation(libs.compose.foundation)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

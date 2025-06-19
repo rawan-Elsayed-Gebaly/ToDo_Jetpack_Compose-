@@ -51,11 +51,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.todo_compose_app.R
 import com.example.todo_compose_app.screens.signup.DrawingSignUpToDoIc
-import com.example.todo_compose_app.screens.signup.DrawingSignUpWays
 import com.example.todo_compose_app.screens.signup.TextFieldItem
 import com.example.todo_compose_app.screens.signup.fontFamily
-import com.example.todo_compose_app.viewModels.AuthUiState
-import com.example.todo_compose_app.viewModels.AuthenticationViewModel
+import com.example.todo_compose_app.viewModels.authviewmodel.AuthUiState
+import com.example.todo_compose_app.viewModels.authviewmodel.AuthenticationViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
