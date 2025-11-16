@@ -12,5 +12,6 @@ interface TasksDataSource {
      fun getAllTasks(): Flow<List<TaskEntity>>
     suspend fun deleteAllTasks()
     fun searchTasks (searchQuery:String):Flow<List<TaskEntity>>
+    fun getTasksInFiveDays(today:Long , afterFiveDays:Long):Flow<List<TaskEntity>>
 
 }

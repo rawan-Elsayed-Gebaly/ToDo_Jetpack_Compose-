@@ -1,4 +1,4 @@
-package com.example.todo_compose_app.screens.task
+package com.example.todo_compose_app.screens.bottom_nav_bar.task
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
@@ -21,7 +21,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -31,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -60,9 +60,9 @@ import java.util.Calendar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayTaskListScreen(
-    viewModel: TaskViewModel = hiltViewModel(),
+    taskViewModel: TaskViewModel,
 ) {
-    val tasks by viewModel.filteredTasks.collectAsStateWithLifecycle()
+    val tasks by taskViewModel.filteredTasks.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
 
     // Bottom Sheet state (shared)
@@ -88,7 +88,7 @@ fun TodayTaskListScreen(
         }.timeInMillis
     }
 
-    // Filter upcoming tasks
+     //Filter upcoming tasks
     val todayTasks by remember(tasks) {
         derivedStateOf {
             tasks.filter { task ->
@@ -125,7 +125,129 @@ fun TodayTaskListScreen(
             val taskFlag: Int? = checkTaskPriority(task)
             Log.d("P", "$taskPriority item list ")
             DrawingTaskItem(
-                task = task ,
+                task = task,
+                taskTitle = task.title.orEmpty(),
+                taskDate = taskDate,
+                isDone = task.isDone,
+                onCheckedChange = { changedValue ->
+                    coroutineScope.launch {
+                        taskViewModel.updateTask(task.copy(isDone = changedValue))
+                    }
+                },
+                dateColor = R.color.semi_transparent_dark_blue,
+                onClick = {
+                    selectedTask = task
+                    showBottomSheet = true
+                    coroutineScope.launch {
+                        sheetState.show()
+                    }
+                },
+                onRemove = {
+                    coroutineScope.launch {
+                        taskViewModel.deleteTask(it)
+                    }
+                },
+                flag = taskFlag ?: 0
+            )
+        }
+    }
+
+    // ✅ Shared Bottom Sheet
+    if (showBottomSheet && selectedTask != null) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                hideBottomSheet()
+            },
+            sheetState = sheetState,
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            containerColor = colorResource(R.color.white)
+        ) {
+            DrawingUpdateTaskBottomSheet(
+                tasksViewModel = taskViewModel,
+                task = selectedTask!!,
+                onTaskUpdated = {
+                    hideBottomSheet()
+                }
+            )
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InFiveDaysTaskList(
+    viewModel: TaskViewModel = hiltViewModel()
+) {
+
+
+    val tasks by viewModel.filteredTasks.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+
+    // Bottom Sheet state (shared)
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var selectedTask by remember { mutableStateOf<Tasks?>(null) }
+
+
+    val fiveDayStart = remember {
+        Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+
+    val fiveDayEnd = remember {
+        Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, 4) // today + 4 more = 5 days total
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 59)
+            set(Calendar.SECOND, 59)
+            set(Calendar.MILLISECOND, 999)
+        }.timeInMillis
+    }
+
+
+    // Filter upcoming tasks
+    val tasksInFiveDays by remember(tasks) {
+        derivedStateOf {
+            tasks.filter { task ->
+                val taskDate = task.date
+                taskDate != null &&
+                        taskDate in fiveDayStart..fiveDayEnd &&
+                        !task.isDone
+            }
+        }
+    }
+
+    if (tasksInFiveDays.isEmpty()) {
+        ShowEmptyPage(stringResource(R.string.empty_Today_Tasks_page_txt))
+        return
+    }
+
+
+    fun hideBottomSheet() {
+        coroutineScope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            showBottomSheet = false
+            selectedTask = null
+        }
+    }
+
+    // ✅ Task list
+    LazyColumn {
+        items(tasksInFiveDays, key = { it.id }) { task ->
+
+
+            val taskDate = task.date?.let { dateFormater(it) } ?: "No Date"
+            val taskPriority = task.priority
+            val taskFlag: Int? = checkTaskPriority(task)
+            Log.d("P", "$taskPriority item list ")
+            DrawingTaskItem(
+                task = task,
                 taskTitle = task.title.orEmpty(),
                 taskDate = taskDate,
                 isDone = task.isDone,
@@ -171,6 +293,7 @@ fun TodayTaskListScreen(
             )
         }
     }
+
 }
 
 fun checkTaskPriority(task: Tasks): Int? {
@@ -192,9 +315,9 @@ fun checkTaskPriority(task: Tasks): Int? {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleTaskListScreen(
-    viewModel: TaskViewModel = hiltViewModel(),
+    taskViewModel: TaskViewModel,
 ) {
-    val tasks by viewModel.filteredTasks.collectAsStateWithLifecycle()
+    val tasks by taskViewModel.filteredTasks.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
     // Shared Bottom Sheet states
@@ -258,13 +381,13 @@ fun ScheduleTaskListScreen(
 
 
             DrawingTaskItem(
-                task = task ,
+                task = task,
                 taskTitle = task.title.orEmpty(),
                 taskDate = taskDate,
                 isDone = task.isDone,
                 onCheckedChange = { changedValue ->
                     coroutineScope.launch {
-                        viewModel.updateTask(task.copy(isDone = changedValue))
+                        taskViewModel.updateTask(task.copy(isDone = changedValue))
                     }
                 },
                 dateColor = taskColor,
@@ -275,7 +398,7 @@ fun ScheduleTaskListScreen(
                 },
                 onRemove = {
                     coroutineScope.launch {
-                        viewModel.deleteTask(it)
+                        taskViewModel.deleteTask(it)
                     }
                 },
                 flag = taskFlag ?: 0
@@ -294,7 +417,7 @@ fun ScheduleTaskListScreen(
             containerColor = colorResource(R.color.white)
         ) {
             DrawingUpdateTaskBottomSheet(
-                tasksViewModel = viewModel,
+                tasksViewModel = taskViewModel,
                 task = selectedTask!!,
                 onTaskUpdated = {
                     hideBottomSheet()
@@ -306,9 +429,9 @@ fun ScheduleTaskListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CompletedTaskListScreen(viewModel: TaskViewModel = hiltViewModel()) {
+fun CompletedTaskListScreen(taskViewModel: TaskViewModel) {
 
-    val tasks by viewModel.filteredTasks.collectAsStateWithLifecycle()
+    val tasks by taskViewModel.filteredTasks.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
 
     // Shared Bottom Sheet states
@@ -345,13 +468,13 @@ fun CompletedTaskListScreen(viewModel: TaskViewModel = hiltViewModel()) {
 
 
             DrawingTaskItem(
-                task = task ,
+                task = task,
                 taskTitle = task.title!!,
                 taskDate = taskDate,
                 isDone = task.isDone,
                 onCheckedChange = { changedValue ->
                     coroutineScope.launch {
-                        viewModel.updateTask(
+                        taskViewModel.updateTask(
                             task.copy(
                                 isDone = changedValue
                             )
@@ -368,7 +491,7 @@ fun CompletedTaskListScreen(viewModel: TaskViewModel = hiltViewModel()) {
                 },
                 onRemove = {
                     coroutineScope.launch {
-                        viewModel.deleteTask(it)
+                        taskViewModel.deleteTask(it)
                     }
                 },
                 flag = taskFlag ?: 0
@@ -389,7 +512,7 @@ fun CompletedTaskListScreen(viewModel: TaskViewModel = hiltViewModel()) {
             containerColor = colorResource(R.color.white)
         ) {
             DrawingUpdateTaskBottomSheet(
-                tasksViewModel = viewModel,
+                tasksViewModel = taskViewModel,
                 task = selectedTask!!,
                 onTaskUpdated = {
                     hideBottomSheet()
@@ -402,14 +525,14 @@ fun CompletedTaskListScreen(viewModel: TaskViewModel = hiltViewModel()) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawingTaskItem(
-    task: Tasks ,
+    task: Tasks,
     taskTitle: String,
     taskDate: String,
     isDone: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     dateColor: Int,
     onClick: () -> Unit,
-    onRemove :(Tasks)->Unit ,
+    onRemove: (Tasks) -> Unit,
     flag: Int
 ) {
 
@@ -429,23 +552,24 @@ fun DrawingTaskItem(
         modifier = Modifier.fillMaxSize(),
         backgroundContent = {
             if (swipeToDismissBoxState.dismissDirection
-                == SwipeToDismissBoxValue.EndToStart ) {
+                == SwipeToDismissBoxValue.EndToStart
+            ) {
 
 
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove item",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Red)
-                            .wrapContentSize(Alignment.CenterEnd)
-                            .padding(12.dp),
-                        tint = Color.White
-                    )
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Remove item",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Red)
+                        .wrapContentSize(Alignment.CenterEnd)
+                        .padding(12.dp),
+                    tint = Color.White
+                )
 
             }
         },
-    ){
+    ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()

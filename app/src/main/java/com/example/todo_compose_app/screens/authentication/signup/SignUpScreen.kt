@@ -1,4 +1,4 @@
-package com.example.todo_compose_app.screens.signup
+package com.example.todo_compose_app.screens.authentication.signup
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -45,8 +45,8 @@ import androidx.navigation.NavController
 import com.example.todo_compose_app.R
 import com.example.todo_compose_app.viewModels.authviewmodel.AuthenticationViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.todo_compose_app.screens.login.OptionalWays
-import com.example.todo_compose_app.screens.login.launchGoogleSignIn
+import com.example.todo_compose_app.screens.authentication.login.OptionalWays
+import com.example.todo_compose_app.screens.authentication.login.launchGoogleSignIn
 import com.example.todo_compose_app.viewModels.authviewmodel.AuthUiState
 import com.example.todo_compose_app.viewModels.authviewmodel.GoogleAuthUiState
 

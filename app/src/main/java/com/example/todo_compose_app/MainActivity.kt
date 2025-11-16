@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -26,6 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -49,8 +54,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.todo_compose_app.navigation.AppNavHost
 import com.example.todo_compose_app.screens.BottomNavBar
 import com.example.todo_compose_app.screens.DrawingAddBtn
-import com.example.todo_compose_app.screens.MainScreen
+import com.example.todo_compose_app.screens.bottom_nav_bar.task.DrawingCreateTaskBottomSheet
+import com.example.todo_compose_app.screens.bottom_nav_bar.task.TopAppBar
 import com.example.todo_compose_app.ui.theme.TODO_Compose_AppTheme
+import com.example.todo_compose_app.viewModels.taskviewmodel.UiStateViewModel
 import com.example.todo_compose_app.viewModels.taskviewmodel.TaskViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -67,11 +74,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            val uiStateViewModel : UiStateViewModel = hiltViewModel()
 
             // ✅ Shared state
             val sheetState = rememberModalBottomSheetState()
             val coroutineScope = rememberCoroutineScope()
-            var showBottomSheet by remember { mutableStateOf(false) }
+            val showBottomSheet= uiStateViewModel.showBottomSheet.collectAsState()
             val taskViewModel: TaskViewModel = hiltViewModel()
 
             Scaffold(
@@ -80,36 +88,54 @@ class MainActivity : ComponentActivity() {
                     DrawingAddBtn(
                         onClick = {
                             coroutineScope.launch {
-                                showBottomSheet = true
-                                sheetState.show()
+                                uiStateViewModel.onOpenBottomSheet()
+//                                sheetState.show()
                             }
                         }
                     )
+                },
+                topBar = {
+                    Box(modifier = Modifier.padding(12.dp)) {
+                        TopAppBar(taskViewModel)
+                    }
+
                 }
             ) { innerPadding ->
 
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Color.White)
+                        .padding(innerPadding)
+                )
+                {
                     AppNavHost(navController)
-
 
 
                 }
 
-                // ✅ Pass state and dismiss logic to MainScreen
-                MainScreen(
-                    showBottomSheet = showBottomSheet,
-                    sheetState = sheetState,
-                    onDismissBottomSheet = {
-                        coroutineScope.launch {
-                            sheetState.hide()
-                        }.invokeOnCompletion {
-                            showBottomSheet = false
-                        }
-                    },
-                    taskViewModel = taskViewModel
-                )
+
+                if (showBottomSheet.value) {
+                    LaunchedEffect(Unit) {
+                        sheetState.show()
+                    }
+                    ModalBottomSheet(
+                        onDismissRequest ={
+                            coroutineScope.launch {
+                                sheetState.hide()
+                            }.invokeOnCompletion {
+                                uiStateViewModel.onCloseBottomSheet()
+                            }
+                        } ,
+                        sheetState = sheetState,
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                        containerColor = colorResource(R.color.white),
+                    ) {
+                        DrawingCreateTaskBottomSheet(
+                            taskViewModel,
+                        )
+                    }
+                }
             }
         }
     }

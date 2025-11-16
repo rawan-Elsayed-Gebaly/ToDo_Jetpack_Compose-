@@ -1,4 +1,4 @@
-package com.example.todo_compose_app.screens.task
+package com.example.todo_compose_app.screens.bottom_nav_bar.task
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -56,6 +56,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.domain.model.Tasks
 import com.example.todo_compose_app.R
 import com.example.todo_compose_app.screens.Schedule
@@ -71,12 +73,21 @@ import java.util.Locale
 
 @Composable
 fun TaskScreen(
-    modifier: Modifier = Modifier.fillMaxSize()
+   navController: NavController
 ) {
     val taskViewModel: TaskViewModel = hiltViewModel()
     TaskScreenContent(taskViewModel)
 }
 
+@Composable
+fun TopAppBar(
+    tasksViewModel: TaskViewModel
+){
+    DrawingSearchBar(
+        tasksViewModel
+    )
+
+}
 
 @Composable
 fun TaskScreenContent(
@@ -86,18 +97,20 @@ fun TaskScreenContent(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
-            .padding(vertical = 35.dp, horizontal = 12.dp)
+            .padding( horizontal = 12.dp)
     ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            DrawingSearchBar(
+//            DrawingSearchBar(
+//                tasksViewModel
+//            )
+
+            DrawingTabs(
                 tasksViewModel
             )
-            Spacer(Modifier.height(8.dp))
-            DrawingTabs()
         }
 
 
@@ -113,8 +126,8 @@ fun DrawingSearchBar(
     val searchQuery by viewModel.searchQuery.collectAsState()
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 18.dp)
+            .background(color =Color.White),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Logo + Title (No weight here!)
@@ -138,6 +151,7 @@ fun DrawingSearchBar(
             value = searchQuery,
             onValueChange = { newText ->
                 viewModel.onSearchTextChanged(newText)
+                Log.d("tag" , "$newText newText")
             },
             placeholder = { Text("Search") },
             leadingIcon = {
@@ -180,6 +194,7 @@ fun DrawingToDoTheIconTaskScreen(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawingTabs(
+    tasksViewModel: TaskViewModel
 ) {
     val tabsTitles = listOf("Schedule", "Today", "Completed")
     val pagerState = rememberPagerState(initialPage = 0) { tabsTitles.size }
@@ -236,9 +251,9 @@ fun DrawingTabs(
 
         ) { page ->
             when (page) {
-                0 -> Schedule()
-                1 -> Today()
-                2 -> Completed()
+                0 -> Schedule(tasksViewModel)
+                1 -> Today(tasksViewModel)
+                2 -> Completed(tasksViewModel)
             }
         }
 
@@ -249,7 +264,6 @@ fun DrawingTabs(
 @Composable
 fun DrawingCreateTaskBottomSheet(
     tasksViewModel: TaskViewModel,
-    onTaskCreated: () -> Unit
 ) {
 
 
@@ -363,7 +377,6 @@ fun DrawingCreateTaskBottomSheet(
                 taskTitle,
                 taskDate,
                 taskDescription,
-                onTaskCreated,
                 showTitleError,
                 taskPriority
             )
@@ -386,7 +399,6 @@ fun DrawingCreateTaskBtn(
     taskTitle: MutableState<String>,
     taskDate: MutableState<Long?>,
     taskDescription: MutableState<String>,
-    onTaskCreated: () -> Unit,
     showTitleError: MutableState<Boolean>,
     taskPriority:MutableState<String>
 ) {
@@ -408,7 +420,6 @@ fun DrawingCreateTaskBtn(
 
             } else {
                 showTitleError.value = false
-                onTaskCreated() // call parent to hide sheet
             }
 
            Log.d("P" , "$taskPriority taskCreated")
