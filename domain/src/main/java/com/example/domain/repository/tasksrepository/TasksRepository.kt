@@ -10,4 +10,5 @@ interface TasksRepository {
      fun getAllTasks(): Flow<List<Tasks>>
     suspend fun deleteAllTasks()
     fun searchTasks(searchQuery:String):Flow<List<Tasks>>
+    fun getTasksAfterFiveDays(today:Long , afterFiveDays:Long):Flow<List<Tasks>>
 }

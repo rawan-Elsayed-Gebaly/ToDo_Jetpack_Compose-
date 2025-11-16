@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)  // Apply KSP plugin for Room
     alias(libs.plugins.hilt)
-    alias(libs.plugins.google.services)
+//    alias(libs.plugins.google.services)
 }
 
 android {

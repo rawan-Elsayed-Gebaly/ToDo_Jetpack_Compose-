@@ -2,7 +2,6 @@ package com.example.domain.usecases
 
 import com.example.domain.model.Tasks
 import com.example.domain.repository.tasksrepository.TasksRepository
-import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -53,5 +52,15 @@ class TasksUseCase @Inject constructor(
 
     fun searchTasks(searchQuery:String):Flow<List<Tasks>>{
         return tasksRepo.searchTasks(searchQuery)
+    }
+
+    fun getTasksInFiveDays(
+        today:Long ,
+        afterFiveDays:Long
+    ):Flow<List<Tasks>>{
+        return tasksRepo.getTasksAfterFiveDays(
+            today ,
+            afterFiveDays
+        )
     }
 }

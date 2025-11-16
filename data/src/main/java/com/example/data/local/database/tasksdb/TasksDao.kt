@@ -32,4 +32,8 @@ interface TasksDao {
     @Query("SELECT * FROM task WHERE title LIKE '%' || :query || '%'")
     fun searchTasks(query: String): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM task WHERE date BETWEEN :today AND :afterFiveDays")
+    fun getTasksInNextFiveDays(today: Long, afterFiveDays: Long): Flow<List<TaskEntity>>
+
+
 }

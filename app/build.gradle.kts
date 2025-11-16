@@ -32,14 +32,20 @@ android {
         }
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // Enable support for the new language APIs
+
     }
     kotlinOptions {
         jvmTarget = "11"
     }
     buildFeatures {
         compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.6.0" // or newer
     }
 }
 
@@ -53,6 +59,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
 
+    implementation(platform(libs.androidx.compose.bom))
     //Navigation Component
     implementation(libs.navigation.compose)
     // Hilt Navigation Component
@@ -79,10 +86,17 @@ dependencies {
     //Pager
     implementation(libs.compose.foundation)
 
+    //Calendar Lib
+    coreLibraryDesugaring(libs.core.library.desugaring)
+    //Calender compose dependency
+    implementation(libs.calendar.compose)
+
+
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
+
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)

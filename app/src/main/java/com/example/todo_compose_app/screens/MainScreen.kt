@@ -27,11 +27,11 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.todo_compose_app.R
-import com.example.todo_compose_app.screens.task.ScheduleTaskListScreen
-import com.example.todo_compose_app.screens.task.BottomNavItem
-import com.example.todo_compose_app.screens.task.CompletedTaskListScreen
-import com.example.todo_compose_app.screens.task.DrawingCreateTaskBottomSheet
-import com.example.todo_compose_app.screens.task.TodayTaskListScreen
+import com.example.todo_compose_app.screens.bottom_nav_bar.task.ScheduleTaskListScreen
+import com.example.todo_compose_app.screens.bottom_nav_bar.task.BottomNavItem
+import com.example.todo_compose_app.screens.bottom_nav_bar.task.CompletedTaskListScreen
+import com.example.todo_compose_app.screens.bottom_nav_bar.task.DrawingCreateTaskBottomSheet
+import com.example.todo_compose_app.screens.bottom_nav_bar.task.TodayTaskListScreen
 import com.example.todo_compose_app.viewModels.taskviewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,24 +41,21 @@ fun MainScreen(
     sheetState: SheetState,
     onDismissBottomSheet: () -> Unit,
     taskViewModel: TaskViewModel
-
-
 ) {
 
 
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = onDismissBottomSheet,
-            sheetState = sheetState,
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            containerColor = colorResource(R.color.white),
-        ) {
-            DrawingCreateTaskBottomSheet(
-                taskViewModel,
-                onTaskCreated = onDismissBottomSheet
-            )
-        }
-    }
+//    if (showBottomSheet) {
+//        ModalBottomSheet(
+//            onDismissRequest = onDismissBottomSheet,
+//            sheetState = sheetState,
+//            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+//            containerColor = colorResource(R.color.white),
+//        ) {
+//            DrawingCreateTaskBottomSheet(
+//                taskViewModel,
+//            )
+//        }
+//    }
 }
 
 
@@ -144,16 +141,19 @@ fun DrawingAddBtn(
 
 
 @Composable
-fun Schedule() {
-    ScheduleTaskListScreen()
+fun Schedule(
+    taskViewModel: TaskViewModel
+) {
+    ScheduleTaskListScreen(taskViewModel)
 }
 
 @Composable
 fun Today(
+    taskViewModel: TaskViewModel
 ) {
-    TodayTaskListScreen()
+    TodayTaskListScreen(taskViewModel)
 }
 @Composable
-fun Completed() {
-    CompletedTaskListScreen()
+fun Completed(taskViewModel: TaskViewModel) {
+    CompletedTaskListScreen(taskViewModel)
 }

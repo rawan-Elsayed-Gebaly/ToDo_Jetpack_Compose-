@@ -52,4 +52,8 @@ class TasksDataSourceImpl @Inject constructor(
     override fun searchTasks(searchQuery: String): Flow<List<TaskEntity>> {
         return tasksDao.searchTasks(searchQuery)
     }
+
+    override fun getTasksInFiveDays(today: Long, afterFiveDays: Long): Flow<List<TaskEntity>> {
+        return tasksDao.getTasksInNextFiveDays(today ,afterFiveDays)
+    }
 }

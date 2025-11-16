@@ -1,4 +1,4 @@
-package com.example.todo_compose_app.screens.login
+package com.example.todo_compose_app.screens.authentication.login
 
 import android.content.Context
 import android.util.Log
@@ -50,9 +50,9 @@ import androidx.credentials.GetCredentialRequest
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.todo_compose_app.R
-import com.example.todo_compose_app.screens.signup.DrawingSignUpToDoIc
-import com.example.todo_compose_app.screens.signup.TextFieldItem
-import com.example.todo_compose_app.screens.signup.fontFamily
+import com.example.todo_compose_app.screens.authentication.signup.DrawingSignUpToDoIc
+import com.example.todo_compose_app.screens.authentication.signup.TextFieldItem
+import com.example.todo_compose_app.screens.authentication.signup.fontFamily
 import com.example.todo_compose_app.viewModels.authviewmodel.AuthUiState
 import com.example.todo_compose_app.viewModels.authviewmodel.AuthenticationViewModel
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -187,7 +187,6 @@ fun DrawingLogInBtn(
 
 
     val authState by viewModel.authState.collectAsState()
-
     val loginEmail = viewModel.loginEmailAddressText.value
     val loginPass = viewModel.loginPasswordText.value
 
